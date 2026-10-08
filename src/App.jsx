@@ -1,4 +1,5 @@
 import { useState } from "react";
+
 import {
   ReactFlow,
   Background,
@@ -7,6 +8,7 @@ import {
   useNodesState,
   useEdgesState,
 } from "@xyflow/react";
+
 import "@xyflow/react/dist/style.css";
 import "./App.css";
 
@@ -37,6 +39,12 @@ function App() {
   const [selectedNode, setSelectedNode] = useState(null);
   const [completedNodes, setCompletedNodes] = useState([]);
 
+  // NEW: selected skill
+  const [selectedSkill, setSelectedSkill] = useState(null);
+
+  // NEW: completed/known skills
+  const [completedSkills, setCompletedSkills] = useState({});
+
   const [loading, setLoading] = useState(false);
   const [aiSource, setAiSource] = useState("");
   const [roadmapSummary, setRoadmapSummary] = useState("");
@@ -49,7 +57,9 @@ function App() {
 
     setLoading(true);
     setSelectedNode(null);
+    setSelectedSkill(null);
     setCompletedNodes([]);
+    setCompletedSkills({});
 
     try {
       const response = await fetch(`${API_URL}/api/generate-roadmap`, {
@@ -166,7 +176,9 @@ function App() {
     setEdges(initialEdges);
 
     setSelectedNode(null);
+    setSelectedSkill(null);
     setCompletedNodes([]);
+    setCompletedSkills({});
     setAiSource("");
     setRoadmapSummary("");
   };
@@ -189,12 +201,15 @@ function App() {
       );
     }
   };
+
   const markAsKnown = () => {
     if (!selectedNode) return;
 
+    // Don't allow removing the main goal
+    if (selectedNode.id === "goal") return;
+
     const nodeId = selectedNode.id;
 
-    // Find nodes connected before and after this milestone
     const incomingNodes = edges
       .filter((edge) => edge.target === nodeId)
       .map((edge) => edge.source);
@@ -203,12 +218,10 @@ function App() {
       .filter((edge) => edge.source === nodeId)
       .map((edge) => edge.target);
 
-    // Remove the selected milestone
     setNodes((currentNodes) =>
       currentNodes.filter((node) => node.id !== nodeId),
     );
 
-    // Remove old connections and create direct connections
     setEdges((currentEdges) => {
       const remainingEdges = currentEdges.filter(
         (edge) => edge.source !== nodeId && edge.target !== nodeId,
@@ -238,18 +251,172 @@ function App() {
       return [...remainingEdges, ...newEdges];
     });
 
+    // Remove from completed list if necessary
+    setCompletedNodes((previous) => previous.filter((id) => id !== nodeId));
+
     setSelectedNode(null);
+    setSelectedSkill(null);
   };
+
+  // -----------------------------------------
+  // SKILL FLOW
+  // -----------------------------------------
+
+  const getSkillFlow = (skill) => {
+    const milestone = selectedNode?.data?.milestone;
+
+    // Gemini-generated skill-specific learning path
+    const aiPath = milestone?.skillPaths?.[skill];
+
+    // Fallback in case a skill path is missing
+    return [
+      {
+        number: "01",
+        title: `Learn ${skill}`,
+        description:
+          aiPath?.learn ||
+          `Understand the core concepts of ${skill} relevant to your ${dreamJob} goal.`,
+        icon: "📚",
+      },
+      {
+        number: "02",
+        title: `Practice ${skill}`,
+        description:
+          aiPath?.practice ||
+          `Practice ${skill} through focused exercises and coding tasks.`,
+        icon: "🧠",
+      },
+      {
+        number: "03",
+        title: `Build with ${skill}`,
+        description:
+          aiPath?.build || `Build a practical project using ${skill}.`,
+        icon: "🚀",
+      },
+      {
+        number: "04",
+        title: `Prove ${skill}`,
+        description:
+          aiPath?.prove ||
+          `Create visible proof of your ${skill} through GitHub or a portfolio project.`,
+        icon: "💼",
+      },
+    ];
+  };
+
+  const completeSkill = () => {
+    if (!selectedSkill || !selectedNode) return;
+
+    const skillKey = `${selectedNode.id}-${selectedSkill}`;
+
+    setCompletedSkills((previous) => {
+      const updatedSkills = {
+        ...previous,
+        [skillKey]: true,
+      };
+
+      const milestoneSkills = selectedNode.data?.milestone?.skills || [];
+
+      const allSkillsCompleted =
+        milestoneSkills.length > 0 &&
+        milestoneSkills.every(
+          (skill) => updatedSkills[`${selectedNode.id}-${skill}`],
+        );
+
+      // Automatically complete the milestone
+      if (allSkillsCompleted) {
+        if (!completedNodes.includes(selectedNode.id)) {
+          setCompletedNodes((previousNodes) => [
+            ...previousNodes,
+            selectedNode.id,
+          ]);
+        }
+
+        setNodes((currentNodes) =>
+          currentNodes.map((node) =>
+            node.id === selectedNode.id
+              ? {
+                  ...node,
+                  className: `${node.className || ""} completed-node`,
+                }
+              : node,
+          ),
+        );
+      }
+
+      return updatedSkills;
+    });
+  };
+
+  const markSkillKnown = () => {
+  if (!selectedSkill || !selectedNode) return;
+
+  const skillKey = `${selectedNode.id}-${selectedSkill}`;
+
+  setCompletedSkills((previous) => {
+    const updatedSkills = {
+      ...previous,
+      [skillKey]: "known",
+    };
+
+    const milestoneSkills =
+      selectedNode.data?.milestone?.skills || [];
+
+    const allSkillsCompleted =
+      milestoneSkills.length > 0 &&
+      milestoneSkills.every(
+        (skill) =>
+          updatedSkills[`${selectedNode.id}-${skill}`]
+      );
+
+    if (allSkillsCompleted) {
+      setCompletedNodes((previousNodes) => {
+        if (previousNodes.includes(selectedNode.id)) {
+          return previousNodes;
+        }
+
+        return [...previousNodes, selectedNode.id];
+      });
+
+      setNodes((currentNodes) =>
+        currentNodes.map((node) =>
+          node.id === selectedNode.id
+            ? {
+                ...node,
+                className: `${node.className || ""} completed-node`,
+              }
+            : node
+        )
+      );
+    }
+
+    return updatedSkills;
+  });
+
+  setSelectedSkill(null);
+};
 
   const roadmapMilestones = nodes.filter((node) => node.id !== "goal");
 
   const progress =
     roadmapMilestones.length > 0
-      ? Math.round((completedNodes.length / roadmapMilestones.length) * 100)
+      ? Math.min(
+          100,
+          Math.round((completedNodes.length / roadmapMilestones.length) * 100),
+        )
       : 0;
 
   if (started) {
     const selectedDetails = selectedNode?.data?.milestone || null;
+
+    const skillFlow = selectedSkill ? getSkillFlow(selectedSkill) : [];
+
+    const skillKey =
+      selectedSkill && selectedNode
+        ? `${selectedNode.id}-${selectedSkill}`
+        : "";
+
+    const currentSkillStatus = completedSkills[skillKey];
 
     return (
       <div className="app roadmap-page">
@@ -334,6 +501,7 @@ function App() {
                 event.stopPropagation();
 
                 setSelectedNode(node);
+                setSelectedSkill(null);
               }}
               nodesDraggable={false}
               nodesConnectable={false}
@@ -351,7 +519,11 @@ function App() {
               <MiniMap />
             </ReactFlow>
 
-            {selectedNode && selectedDetails && (
+            {/* -------------------------------- */}
+            {/* MILESTONE DETAILS */}
+            {/* -------------------------------- */}
+
+            {selectedNode && selectedDetails && !selectedSkill && (
               <div className="node-details">
                 <button
                   className="close-details"
@@ -366,10 +538,57 @@ function App() {
 
                 <p className="detail-text">{selectedDetails.description}</p>
 
+                {/* CLICKABLE SKILLS */}
                 {selectedDetails.skills?.length > 0 && (
                   <div className="detail-box">
                     <strong>🧠 Skills</strong>
-                    <p>{selectedDetails.skills.join(" • ")}</p>
+
+                    <div
+                      style={{
+                        display: "flex",
+                        flexWrap: "wrap",
+                        gap: "8px",
+                        marginTop: "12px",
+                      }}
+                    >
+                      {selectedDetails.skills.map((skill, index) => {
+                        const key = `${selectedNode.id}-${skill}`;
+                        const status = completedSkills[key];
+
+                        return (
+                          <button
+                            key={`${skill}-${index}`}
+                            onClick={() => setSelectedSkill(skill)}
+                            style={{
+                              border: "1px solid #31577e",
+                              background: status
+                                ? "rgba(34,197,94,.12)"
+                                : "#10253c",
+                              color: status ? "#86efac" : "#bfdbfe",
+                              borderRadius: "9px",
+                              padding: "9px 11px",
+                              cursor: "pointer",
+                              fontSize: "12px",
+                              fontWeight: 600,
+                              transition: "0.2s ease",
+                            }}
+                          >
+                            {status === "known" ? "✓ " : status ? "✓ " : "→ "}
+                            {skill}
+                          </button>
+                        );
+                      })}
+                    </div>
+
+                    <p
+                      style={{
+                        marginTop: "10px",
+                        fontSize: "11px",
+                        opacity: 0.6,
+                      }}
+                    >
+                      Click a skill to open its learning path.
+                    </p>
                   </div>
                 )}
 
@@ -421,6 +640,175 @@ function App() {
                 )}
               </div>
             )}
+
+            {/* -------------------------------- */}
+            {/* SKILL LEARNING FLOW */}
+            {/* -------------------------------- */}
+
+            {selectedNode && selectedDetails && selectedSkill && (
+              <div
+                className="node-details"
+                style={{
+                  width: "340px",
+                }}
+              >
+                <button
+                  className="close-details"
+                  onClick={() => setSelectedSkill(null)}
+                >
+                  ×
+                </button>
+
+                <button
+                  onClick={() => setSelectedSkill(null)}
+                  style={{
+                    background: "transparent",
+                    border: "none",
+                    color: "#60a5fa",
+                    cursor: "pointer",
+                    fontSize: "12px",
+                    marginBottom: "10px",
+                    padding: 0,
+                  }}
+                >
+                  ← Back to milestone
+                </button>
+
+                <p className="eyebrow">SKILL LEARNING PATH</p>
+
+                <h2>{selectedSkill}</h2>
+
+                <p className="detail-text">
+                  A practical path to build this skill for your{" "}
+                  <strong>{dreamJob}</strong> goal.
+                </p>
+
+                {/* FLOWCHART */}
+                <div
+                  style={{
+                    marginTop: "18px",
+                    display: "flex",
+                    flexDirection: "column",
+                    gap: "0",
+                  }}
+                >
+                  {skillFlow.map((step, index) => (
+                    <div key={step.number}>
+                      <div
+                        style={{
+                          display: "flex",
+                          gap: "12px",
+                          alignItems: "flex-start",
+                        }}
+                      >
+                        <div
+                          style={{
+                            minWidth: "36px",
+                            height: "36px",
+                            borderRadius: "50%",
+                            display: "flex",
+                            alignItems: "center",
+                            justifyContent: "center",
+                            background:
+                              index === skillFlow.length - 1
+                                ? "rgba(34,197,94,.15)"
+                                : "rgba(37,99,235,.15)",
+                            border:
+                              index === skillFlow.length - 1
+                                ? "1px solid #22c55e"
+                                : "1px solid #3b82f6",
+                            fontSize: "15px",
+                          }}
+                        >
+                          {step.icon}
+                        </div>
+
+                        <div
+                          style={{
+                            flex: 1,
+                            background: "#0d1d30",
+                            border: "1px solid #1f3853",
+                            borderRadius: "10px",
+                            padding: "11px",
+                          }}
+                        >
+                          <div
+                            style={{
+                              fontSize: "10px",
+                              color: "#60a5fa",
+                              fontWeight: 700,
+                              letterSpacing: "1px",
+                            }}
+                          >
+                            STEP {step.number}
+                          </div>
+
+                          <strong
+                            style={{
+                              display: "block",
+                              marginTop: "3px",
+                              color: "#e2e8f0",
+                            }}
+                          >
+                            {step.title}
+                          </strong>
+
+                          <p
+                            style={{
+                              margin: "6px 0 0",
+                              fontSize: "11px",
+                              lineHeight: 1.5,
+                              color: "#8da1b7",
+                            }}
+                          >
+                            {step.description}
+                          </p>
+                        </div>
+                      </div>
+
+                      {index < skillFlow.length - 1 && (
+                        <div
+                          style={{
+                            width: "1px",
+                            height: "20px",
+                            background: "#31577e",
+                            marginLeft: "18px",
+                          }}
+                        />
+                      )}
+                    </div>
+                  ))}
+                </div>
+
+                {/* SKILL STATUS */}
+                {currentSkillStatus ? (
+                  <button
+                    className="complete-btn completed"
+                    disabled
+                    style={{ marginTop: "18px" }}
+                  >
+                    ✓{" "}
+                    {currentSkillStatus === "known"
+                      ? "Already Known"
+                      : "Skill Completed"}
+                  </button>
+                ) : (
+                  <>
+                    <button
+                      className="complete-btn"
+                      onClick={markSkillKnown}
+                      style={{ marginTop: "18px" }}
+                    >
+                      ✓ I already know this skill
+                    </button>
+
+                    <button className="complete-btn" onClick={completeSkill}>
+                      ✓ Mark skill as completed
+                    </button>
+                  </>
+                )}
+              </div>
+            )}
           </div>
 
           <aside className="side-panel">
@@ -451,6 +839,7 @@ function App() {
 
               <div>
                 <strong>Build proof</strong>
+
                 <p>
                   Every milestone includes projects and proof-of-skill actions.
                 </p>
