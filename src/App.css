@@ -1333,3 +1333,433 @@ box-sizing: border-box !important;
     border-color 0.2s ease,
     box-shadow 0.2s ease;
 }
+/* ================================
+   FULL RESPONSIVE DESIGN
+   ================================ */
+
+/* Tablet */
+@media (max-width: 900px) {
+  .hero {
+    grid-template-columns: 1fr;
+    padding: 40px 24px;
+    gap: 35px;
+  }
+
+  .preview {
+    display: none;
+  }
+
+  .roadmap-layout {
+    grid-template-columns: 1fr;
+    height: 650px;
+    min-height: 650px;
+  }
+
+  .side-panel {
+    display: none;
+  }
+
+  .flow-container {
+    width: 100%;
+    height: 650px;
+  }
+
+  .roadmap-header {
+    padding: 20px 24px;
+  }
+}
+
+
+/* Mobile */
+@media (max-width: 600px) {
+  .navbar,
+  .topbar {
+    height: 68px;
+    padding: 0 14px;
+  }
+
+  .brand {
+    gap: 8px;
+  }
+
+  .brand-icon {
+    width: 36px;
+    height: 36px;
+    border-radius: 10px;
+    font-size: 12px;
+  }
+
+  .brand h2 {
+    font-size: 15px;
+  }
+
+  .brand span {
+    display: none;
+  }
+
+  .back-btn {
+    padding: 8px 10px;
+    font-size: 11px;
+  }
+
+  /* Landing page */
+  .hero {
+    width: 100%;
+    min-height: auto;
+    padding: 35px 16px 50px;
+    display: flex;
+    flex-direction: column;
+    gap: 25px;
+    box-sizing: border-box;
+  }
+
+  .hero-content {
+    width: 100%;
+  }
+
+  .hero h1 {
+    font-size: clamp(38px, 11vw, 52px);
+    line-height: 1;
+    letter-spacing: -2px;
+  }
+
+  .hero-text {
+    font-size: 15px;
+    line-height: 1.6;
+  }
+
+  .input-card {
+    width: 100%;
+    margin-top: 25px;
+    padding: 18px;
+    box-sizing: border-box;
+  }
+
+  .card-heading {
+    gap: 10px;
+  }
+
+  .card-heading h2 {
+    font-size: 18px;
+  }
+
+  .card-heading p {
+    font-size: 12px;
+  }
+
+  .form-grid {
+    grid-template-columns: 1fr;
+    gap: 0;
+  }
+
+  .trust-row {
+    flex-wrap: wrap;
+    gap: 10px;
+  }
+
+  /* Roadmap header */
+  .roadmap-header {
+    min-height: auto;
+    padding: 18px 16px;
+    display: block;
+  }
+
+  .roadmap-header h1 {
+    font-size: 22px;
+    line-height: 1.25;
+    word-break: break-word;
+  }
+
+  .roadmap-header p {
+    font-size: 11px;
+    line-height: 1.5;
+  }
+
+  .progress-card {
+    display: none;
+  }
+
+  /* Roadmap */
+  .roadmap-page {
+    min-height: 100vh;
+    height: auto;
+    overflow-x: hidden;
+    overflow-y: auto;
+  }
+
+  .roadmap-layout {
+    width: 100%;
+    height: 600px;
+    min-height: 600px;
+    display: block;
+  }
+
+  .flow-container {
+    width: 100%;
+    height: 600px;
+    min-height: 600px;
+    overflow: hidden !important;
+  }
+
+  .flow-container .react-flow {
+    width: 100%;
+    height: 100%;
+  }
+
+  /* React Flow nodes */
+  .react-flow__node {
+    font-size: 10px;
+    padding: 10px 12px;
+    max-width: 130px;
+  }
+
+  /* Details panel */
+  .node-details {
+    top: 12px !important;
+    left: 12px !important;
+    width: calc(100% - 24px) !important;
+    max-width: none !important;
+    max-height: calc(100% - 24px) !important;
+    padding: 16px !important;
+    overflow-y: auto !important;
+    box-sizing: border-box !important;
+  }
+
+  .node-details h2 {
+    font-size: 18px !important;
+  }
+
+  .detail-text {
+    font-size: 11px !important;
+  }
+
+  .detail-box {
+    font-size: 11px;
+  }
+
+  .complete-btn {
+    width: 100%;
+    margin-top: 10px;
+  }
+
+  /* React Flow controls */
+  .react-flow__controls {
+    transform: scale(0.9);
+    transform-origin: bottom left;
+  }
+
+  .react-flow__minimap {
+    transform: scale(0.75);
+    transform-origin: bottom right;
+  }
+
+  footer {
+    display: none;
+  }
+}
+
+
+/* Very small phones */
+@media (max-width: 380px) {
+  .hero {
+    padding-left: 12px;
+    padding-right: 12px;
+  }
+
+  .input-card {
+    padding: 14px;
+  }
+
+  .roadmap-layout,
+  .flow-container {
+    height: 560px;
+    min-height: 560px;
+  }
+
+  .react-flow__node {
+    font-size: 9px;
+    max-width: 115px;
+  }
+}
+/* =========================================
+   PROFESSIONAL PRODUCT UI POLISH
+   ========================================= */
+
+:root {
+  --cf-bg: #07101c;
+  --cf-panel: #0c1726;
+  --cf-panel-2: #101d2e;
+  --cf-border: #22344a;
+  --cf-border-soft: #1a2a3d;
+  --cf-text: #e7edf5;
+  --cf-muted: #8b9aae;
+  --cf-blue: #4f8cff;
+}
+
+/* Less decorative, more professional */
+.app {
+  background: var(--cf-bg);
+}
+
+/* Navbar */
+.navbar,
+.topbar {
+  background: #08121f;
+  backdrop-filter: none;
+  border-bottom: 1px solid var(--cf-border-soft);
+}
+
+.brand-icon {
+  background: #1769e0;
+  box-shadow: none;
+  border-radius: 9px;
+}
+
+/* Landing badge */
+.badge {
+  background: #0d1b2c;
+  border-color: #263b55;
+  color: #8fb9f5;
+}
+
+/* Main heading */
+.hero h1 span {
+  background: none;
+  color: #5fa3ff;
+  -webkit-text-fill-color: #5fa3ff;
+}
+
+/* Input card */
+.input-card {
+  background: var(--cf-panel);
+  border: 1px solid var(--cf-border);
+  box-shadow: 0 15px 45px rgba(0, 0, 0, 0.22);
+  border-radius: 16px;
+}
+
+/* Inputs */
+input,
+select {
+  background: #091421;
+  border-color: #26384e;
+  border-radius: 8px;
+}
+
+input:focus,
+select:focus {
+  border-color: var(--cf-blue);
+  box-shadow: 0 0 0 2px rgba(79, 140, 255, 0.12);
+}
+
+/* Main CTA */
+.generate-btn {
+  background: #1769e0;
+  box-shadow: none;
+  border-radius: 8px;
+}
+
+.generate-btn:hover {
+  transform: translateY(-1px);
+  background: #2878ed;
+  box-shadow: 0 8px 20px rgba(23, 105, 224, 0.2);
+}
+
+/* Preview */
+.preview-glow {
+  display: none;
+}
+
+.preview-card {
+  background: #0b1726;
+  border-color: #22364d;
+  box-shadow: 0 20px 55px rgba(0, 0, 0, 0.3);
+  border-radius: 18px;
+}
+
+/* Roadmap header */
+.roadmap-header {
+  background: #08121f;
+  border-bottom: 1px solid var(--cf-border-soft);
+}
+
+.roadmap-header h1 {
+  font-weight: 700;
+}
+
+/* Progress */
+.progress-card {
+  background: #0c1726;
+  border-color: #26384e;
+  border-radius: 9px;
+}
+
+/* Roadmap canvas */
+.flow-container {
+  background: #091421;
+}
+
+/* Nodes */
+.react-flow__node {
+  background: #102033;
+  border: 1px solid #2b4058;
+  border-radius: 9px;
+  box-shadow: 0 5px 18px rgba(0, 0, 0, 0.25);
+}
+
+.react-flow__node:hover {
+  border-color: #4f8cff !important;
+  box-shadow: 0 5px 18px rgba(0, 0, 0, 0.35);
+  transform: none;
+}
+
+.react-flow__node.goal-node {
+  background: #12325a;
+  border-color: #4f8cff;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.3);
+}
+
+/* Details panel */
+.node-details {
+  background: #0c1726 !important;
+  border: 1px solid #304964 !important;
+  border-radius: 14px !important;
+  box-shadow: 0 20px 55px rgba(0, 0, 0, 0.55) !important;
+  backdrop-filter: none;
+}
+
+/* Detail cards */
+.detail-box {
+  background: #101e2f !important;
+  border-color: #22364c !important;
+  border-radius: 9px !important;
+}
+
+/* Buttons */
+.complete-btn {
+  background: #1769e0 !important;
+  border-radius: 8px !important;
+}
+
+.complete-btn:hover {
+  box-shadow: 0 7px 18px rgba(23, 105, 224, 0.2);
+}
+
+/* Completed state */
+.react-flow__node.completed-node {
+  background: #123326 !important;
+  border-color: #35a76f !important;
+  box-shadow: none !important;
+}
+
+/* Side panel */
+.side-panel {
+  background: #0a1523;
+  border-left-color: #1d3045;
+}
+
+/* Remove excessive decorative AI glow */
+.ai-note {
+  background: #0d1b2a;
+  border-color: #24435a;
+  border-radius: 9px;
+}
