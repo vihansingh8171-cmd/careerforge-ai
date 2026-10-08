@@ -1763,3 +1763,264 @@ select:focus {
   border-color: #24435a;
   border-radius: 9px;
 }
+/* =========================================
+   CAREERFORGE MODERN DARK BLUE UI
+   ========================================= */
+
+.roadmap-page {
+  background: #07111f !important;
+  color: #f8fafc;
+}
+
+/* Top navigation */
+.roadmap-page .topbar {
+  background: #07111f;
+  border-bottom: 1px solid #17283d;
+  padding: 0 5%;
+}
+
+.roadmap-page .brand-icon {
+  background: linear-gradient(135deg, #2563eb, #0ea5e9);
+  box-shadow: 0 8px 25px rgba(37, 99, 235, 0.25);
+}
+
+.roadmap-page .brand h2 {
+  color: #f8fafc;
+}
+
+.roadmap-page .brand span {
+  color: #7890ad;
+}
+
+.back-btn {
+  border: 1px solid #28415f !important;
+  background: transparent !important;
+  color: #dbeafe !important;
+  transition: 0.2s ease;
+}
+
+.back-btn:hover {
+  border-color: #3b82f6 !important;
+  background: #0d1d32 !important;
+  color: #60a5fa !important;
+}
+
+/* Roadmap header */
+.roadmap-header {
+  background: #07111f;
+  border-bottom: 1px solid #17283d;
+  padding: 34px 5%;
+}
+
+.roadmap-header .eyebrow {
+  color: #60a5fa;
+  letter-spacing: 2px;
+}
+
+.roadmap-header h1 {
+  color: #f8fafc;
+  font-weight: 800;
+  letter-spacing: -0.8px;
+}
+
+.roadmap-header p {
+  color: #7890ad;
+}
+
+/* Gemini indicator */
+.roadmap-header > div:first-child > div {
+  color: #8fb5dc !important;
+}
+
+/* Progress */
+.progress-card {
+  min-width: 240px;
+  background: #0b192b !important;
+  border: 1px solid #203752 !important;
+  border-radius: 14px !important;
+  box-shadow: 0 12px 35px rgba(0, 0, 0, 0.18);
+}
+
+.progress-card span {
+  color: #8da4bf !important;
+}
+
+.progress-card strong {
+  color: #f8fafc;
+  font-size: 22px;
+}
+
+.progress-bar {
+  background: #17283d !important;
+}
+
+.progress-bar div {
+  background: linear-gradient(90deg, #2563eb, #38bdf8) !important;
+}
+
+/* Main roadmap */
+.roadmap-layout {
+  background: #07111f;
+}
+
+.flow-container {
+  background: #081525 !important;
+  border-top: 1px solid #172b43 !important;
+}
+
+/* React Flow nodes */
+.react-flow__node {
+  background: #102238 !important;
+  border: 1px solid #294967 !important;
+  border-radius: 12px !important;
+  color: #dbeafe !important;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.22) !important;
+  transition: all 0.2s ease;
+}
+
+.react-flow__node:hover {
+  border-color: #3b82f6 !important;
+  box-shadow: 0 12px 35px rgba(37, 99, 235, 0.18) !important;
+}
+
+.react-flow__node.goal-node {
+  background: linear-gradient(135deg, #12345c, #102844) !important;
+  border-color: #3b82f6 !important;
+  box-shadow: 0 12px 40px rgba(37, 99, 235, 0.2) !important;
+}
+
+.react-flow__edge-path {
+  stroke: #3b82f6 !important;
+}
+
+/* Side journey panel */
+.side-panel {
+  background: #091727 !important;
+  border-left: 1px solid #172b43 !important;
+  padding: 34px 26px !important;
+}
+
+.side-panel .eyebrow {
+  color: #38bdf8 !important;
+}
+
+.side-panel h2 {
+  color: #f8fafc;
+  font-size: 27px;
+  letter-spacing: -0.5px;
+}
+
+.info-item {
+  padding: 10px 0;
+}
+
+.info-item > span {
+  color: #60a5fa !important;
+  font-size: 12px !important;
+  min-width: 25px;
+}
+
+.info-item strong {
+  color: #e2e8f0;
+}
+
+.info-item p {
+  color: #7188a3 !important;
+}
+
+/* AI note */
+.ai-note {
+  border: 1px solid rgba(59, 130, 246, 0.2) !important;
+  background: rgba(37, 99, 235, 0.06) !important;
+}
+
+.ai-note > span {
+  color: #60a5fa !important;
+}
+
+.ai-note p {
+  color: #7188a3 !important;
+}
+
+/* Completed nodes */
+.react-flow__node.completed-node {
+  border-color: #22c55e !important;
+  background: linear-gradient(135deg, #103326, #102b27) !important;
+  box-shadow: 0 0 25px rgba(34, 197, 94, 0.14) !important;
+}
+
+/* React Flow controls */
+.react-flow__controls {
+  box-shadow: 0 8px 25px rgba(0, 0, 0, 0.3) !important;
+}
+
+.react-flow__controls button {
+  background: #0d1d30 !important;
+  border-color: #243c58 !important;
+  color: #cbd5e1 !important;
+}
+
+.react-flow__controls button:hover {
+  background: #132a44 !important;
+}
+
+/* Mini map */
+.react-flow__minimap {
+  background: #0b192b !important;
+  border: 1px solid #203752 !important;
+}
+
+/* Node details */
+.node-details {
+  background: rgba(8, 20, 35, 0.98) !important;
+  border: 1px solid #3b82f6 !important;
+  border-radius: 16px !important;
+  box-shadow:
+    0 25px 70px rgba(0, 0, 0, 0.55),
+    0 0 25px rgba(37, 99, 235, 0.12) !important;
+}
+
+.node-details h2 {
+  color: #f8fafc;
+}
+
+.node-details .detail-text {
+  color: #91a4ba;
+}
+
+.detail-box {
+  background: #0d1d30 !important;
+  border: 1px solid #1f3853 !important;
+}
+
+.detail-box strong {
+  color: #dbeafe;
+}
+
+.detail-box p {
+  color: #8da1b7;
+}
+
+/* Close button */
+.close-details {
+  color: #94a3b8 !important;
+}
+
+.close-details:hover {
+  color: #f8fafc !important;
+}
+
+/* Buttons */
+.complete-btn {
+  background: #2563eb !important;
+  border: 1px solid #3b82f6 !important;
+}
+
+.complete-btn:hover {
+  background: #1d4ed8 !important;
+}
+
+.complete-btn.completed {
+  background: #166534 !important;
+  border-color: #22c55e !important;
+}
