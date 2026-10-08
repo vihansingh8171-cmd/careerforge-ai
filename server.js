@@ -15,427 +15,413 @@ const ai = new GoogleGenAI({
   apiKey: process.env.GEMINI_API_KEY,
 });
 
-// --------------------------------------------------
+
+// ==========================================
+// TIMELINE HELPERS
+// ==========================================
+
+function timelineToWeeks(timeline) {
+  const value = String(timeline || "3 months").toLowerCase().trim();
+
+  const match = value.match(/\d+(\.\d+)?/);
+  const amount = match ? Number(match[0]) : 12;
+
+  if (value.includes("day")) {
+    return Math.max(1, Math.ceil(amount / 7));
+  }
+
+  if (value.includes("week")) {
+    return Math.max(1, Math.ceil(amount));
+  }
+
+  if (value.includes("month")) {
+    return Math.max(1, Math.ceil(amount * 4.33));
+  }
+
+  if (value.includes("year")) {
+    return Math.max(1, Math.ceil(amount * 52));
+  }
+
+  return 12;
+}
+
+
+// ==========================================
+// SKILL PATH
+// ==========================================
+
+function createSkillPath(skill, dreamJob, project, proof) {
+  return {
+    learn: `Learn the core concepts of ${skill} that are relevant to becoming a ${dreamJob}.`,
+
+    practice: `Practice ${skill} using focused exercises, coding tasks and small challenges.`,
+
+    build:
+      project ||
+      `Build a practical project related to ${dreamJob} using ${skill}.`,
+
+    prove:
+      proof ||
+      `Show proof of ${skill} through GitHub, portfolio work or a project demonstration.`,
+  };
+}
+
+
+// ==========================================
 // FALLBACK ROADMAP
-// --------------------------------------------------
+// ==========================================
+
 function createFallbackRoadmap({
   dreamJob,
   currentLevel,
   hoursPerWeek,
   knownSkills,
+  targetTimeline,
 }) {
-  const skills = (knownSkills || "")
-    .split(",")
-    .map((skill) => skill.trim())
-    .filter(Boolean);
-
-  const hasHTML = skills.some(
-    (s) => s.toLowerCase() === "html"
-  );
-
-  const hasCSS = skills.some(
-    (s) => s.toLowerCase() === "css"
-  );
-
-  const makeSkillPath = (skill, project, proof) => ({
-    learn: `Learn the core concepts of ${skill} that are relevant to becoming a ${dreamJob}.`,
-    practice: `Practice ${skill} through focused exercises, coding tasks and small challenges.`,
-    build: project || `Build a small practical project using ${skill}.`,
-    prove: proof || `Create visible proof of ${skill} through GitHub or a portfolio project.`,
-  });
+  const timelineWeeks = timelineToWeeks(targetTimeline);
 
   const milestones = [
     {
       id: "m1",
       title: "Career Skill Gap",
       shortTitle: "Skill Gap",
-      description: `Analyze the skills required for ${dreamJob} and compare them with your current ${currentLevel} level.`,
+      description: `Analyze the skills required for ${dreamJob} and compare them with your current level.`,
       skills: ["Career requirements", "Skill assessment"],
-      skillPaths: {
-        "Career requirements": makeSkillPath(
-          "Career requirements",
-          "Create a target-role requirements checklist.",
-          "Completed career requirements checklist."
-        ),
-        "Skill assessment": makeSkillPath(
-          "Skill assessment",
-          "Build a personal skill-gap tracker.",
-          "Completed skill-gap analysis."
-        ),
-      },
-      action:
-        "Create a checklist of the top skills required for your target role and mark your current strengths and gaps.",
-      project: "Build a personal skill-gap tracker.",
-      proof: "Completed skill-gap checklist and learning plan.",
+      action: `Identify the most important skills required for a ${dreamJob} role.`,
+      project: `Create a personal ${dreamJob} skill-gap checklist.`,
+      proof: "Document your current skills and target skills.",
       estimatedWeeks: 1,
       priority: "High",
     },
 
     {
       id: "m2",
-      title: "Programming Foundations",
+      title: "Core Foundations",
       shortTitle: "Foundations",
-      description:
-        "Strengthen programming fundamentals, problem solving and core computer science concepts.",
-      skills: [
-        "Programming",
-        "Data structures",
-        "Problem solving",
-      ],
-      skillPaths: {
-        Programming: makeSkillPath(
-          "Programming",
-          "Build a command-line utility using your strongest programming language.",
-          "GitHub repository containing working code."
-        ),
-        "Data structures": makeSkillPath(
-          "Data structures",
-          "Implement arrays, stacks, queues and linked lists.",
-          "GitHub repository with implementations and examples."
-        ),
-        "Problem solving": makeSkillPath(
-          "Problem solving",
-          "Solve a set of progressively harder programming problems.",
-          "Problem-solving repository with documented solutions."
-        ),
-      },
-      action:
-        "Practice programming problems regularly and revise the fundamentals required for your target role.",
-      project:
-        "Build a command-line utility using your strongest programming language.",
-      proof:
-        "GitHub repository containing working code.",
-      estimatedWeeks: 3,
+      description: `Build the technical foundations required for ${dreamJob}.`,
+      skills: ["Programming fundamentals", "Problem solving"],
+      action: `Practice the core programming and problem-solving concepts used in ${dreamJob}.`,
+      project: "Build 3 small practice projects.",
+      proof: "Upload your practice work to GitHub.",
+      estimatedWeeks: 2,
       priority: "High",
     },
 
     {
       id: "m3",
-      title: "Core Technical Skills",
+      title: "Role-Specific Skills",
       shortTitle: "Core Skills",
-      description: `Develop the practical technologies most commonly used in ${dreamJob} roles.`,
-      skills: [
-        "Technical tools",
-        "Development workflow",
-      ],
-      skillPaths: {
-        "Technical tools": makeSkillPath(
-          "Technical tools",
-          `Build a small ${dreamJob}-related application using the required tools.`,
-          "Working application with README documentation."
-        ),
-        "Development workflow": makeSkillPath(
-          "Development workflow",
-          "Practice Git, debugging, testing and project organization.",
-          "Well-structured GitHub repository with commits and README."
-        ),
-      },
-      action:
-        "Choose 2–3 technologies directly relevant to your target job and build small exercises with them.",
-      project:
-        "Create a small practical application using the selected technologies.",
-      proof:
-        "Working application plus GitHub README.",
-      estimatedWeeks: 3,
+      description: `Develop the most important technical skills for ${dreamJob}.`,
+      skills: ["Technical tools", "APIs"],
+      action: `Learn and practice tools commonly used in your target role.`,
+      project: `Build a small ${dreamJob}-related application.`,
+      proof: "Publish the project with a README.",
+      estimatedWeeks: 2,
       priority: "High",
     },
 
     {
       id: "m4",
-      title: "Portfolio Project",
+      title: "Practical Project",
       shortTitle: "Project",
-      description:
-        "Turn your skills into a substantial project that demonstrates real-world problem solving.",
-      skills: [
-        "Project development",
-        "Git",
-        "Documentation",
-      ],
-      skillPaths: {
-        "Project development": makeSkillPath(
-          "Project development",
-          `Build a production-style project related to ${dreamJob}.`,
-          "Live project demo and source code."
-        ),
-        Git: makeSkillPath(
-          "Git",
-          "Use branches, meaningful commits and version control throughout the project.",
-          "Public GitHub repository with clean commit history."
-        ),
-        Documentation: makeSkillPath(
-          "Documentation",
-          "Write a clear README containing setup, features and screenshots.",
-          "Complete GitHub README with project documentation."
-        ),
-      },
-      action:
-        "Build one polished project solving a real problem. Add documentation, screenshots and clear setup instructions.",
-      project:
-        `Build a production-style project related to ${dreamJob}.`,
-      proof:
-        "Live demo + GitHub repository + project README.",
-      estimatedWeeks: 4,
+      description: `Convert your knowledge into a realistic portfolio project.`,
+      skills: ["Project development", "GitHub"],
+      action: `Build an end-to-end project that solves a real-world problem.`,
+      project: `Create a portfolio-ready ${dreamJob} project.`,
+      proof: "Publish the source code and project documentation.",
+      estimatedWeeks: 2,
       priority: "High",
     },
 
     {
       id: "m5",
-      title: "Interview Preparation",
-      shortTitle: "Interview",
-      description:
-        "Prepare for technical and behavioral interviews for your target career.",
-      skills: [
-        "Interview skills",
-        "Communication",
-        "Problem solving",
-      ],
-      skillPaths: {
-        "Interview skills": makeSkillPath(
-          "Interview skills",
-          "Create and practice a role-specific mock interview.",
-          "Completed mock interview."
-        ),
-        Communication: makeSkillPath(
-          "Communication",
-          "Practice explaining technical concepts and projects clearly.",
-          "Recorded project explanation or mock interview."
-        ),
-        "Problem solving": makeSkillPath(
-          "Problem solving",
-          "Practice timed technical questions relevant to the role.",
-          "Completed interview problem set."
-        ),
-      },
-      action:
-        "Practice role-specific interview questions and explain your portfolio project aloud.",
-      project:
-        "Create a 30-question interview preparation set.",
-      proof:
-        "Completed mock interview and interview question bank.",
+      title: "Advanced Practice",
+      shortTitle: "Advanced",
+      description: `Strengthen your skills through advanced tasks and debugging.`,
+      skills: ["Advanced concepts", "Debugging"],
+      action: "Solve harder problems and improve your existing project.",
+      project: "Add an advanced feature to your main project.",
+      proof: "Document the improvement and technical decisions.",
       estimatedWeeks: 2,
       priority: "Medium",
     },
 
     {
       id: "m6",
-      title: "Internship Ready",
-      shortTitle: "Internship",
-      description:
-        "Prepare your profile and start applying for relevant internships.",
-      skills: [
-        "Resume",
-        "GitHub",
-        "LinkedIn",
-        "Applications",
-      ],
-      skillPaths: {
-        Resume: makeSkillPath(
-          "Resume",
-          "Create a one-page resume targeted to your desired role.",
-          "ATS-friendly resume."
-        ),
-        GitHub: makeSkillPath(
-          "GitHub",
-          "Organize your strongest repositories and improve their READMEs.",
-          "Clean GitHub profile with pinned projects."
-        ),
-        LinkedIn: makeSkillPath(
-          "LinkedIn",
-          "Create a role-focused LinkedIn profile and showcase projects.",
-          "Complete professional LinkedIn profile."
-        ),
-        Applications: makeSkillPath(
-          "Applications",
-          "Apply consistently to relevant internship opportunities.",
-          "Application tracker with submitted applications."
-        ),
-      },
-      action:
-        "Polish your resume, GitHub and LinkedIn. Apply consistently to relevant internship openings.",
-      project:
-        "Create a targeted internship application kit.",
-      proof:
-        "Resume + GitHub + LinkedIn + application tracker.",
-      estimatedWeeks: 2,
+      title: "Portfolio & Resume",
+      shortTitle: "Portfolio",
+      description: `Prepare strong proof of your skills for recruiters.`,
+      skills: ["Portfolio", "Resume"],
+      action: `Create a portfolio and resume focused on ${dreamJob}.`,
+      project: "Build a professional portfolio.",
+      proof: "Keep GitHub, resume and portfolio links ready.",
+      estimatedWeeks: 1,
       priority: "High",
     },
 
     {
       id: "m7",
-      title: "Career Ready",
+      title: "Job Readiness",
       shortTitle: "Job Ready",
-      description:
-        `Build enough evidence and practical experience to confidently target ${dreamJob} opportunities.`,
-      skills: [
-        "Portfolio",
-        "Interview",
-        "Professional skills",
-      ],
-      skillPaths: {
-        Portfolio: makeSkillPath(
-          "Portfolio",
-          "Create a portfolio containing your strongest 2–3 projects.",
-          "Live portfolio website."
-        ),
-        Interview: makeSkillPath(
-          "Interview",
-          "Complete multiple mock interviews and improve weak areas.",
-          "Interview-ready preparation record."
-        ),
-        "Professional skills": makeSkillPath(
-          "Professional skills",
-          "Practice networking, communication and workplace readiness.",
-          "Professional profile and networking activity."
-        ),
-      },
-      action:
-        "Complete your strongest projects, practice interviews and begin applying for entry-level opportunities.",
-      project:
-        "Create a final portfolio containing your 2–3 strongest projects.",
-      proof:
-        "Portfolio website + GitHub + interview-ready resume.",
-      estimatedWeeks: 3,
+      description: `Prepare for internships, interviews and entry-level opportunities.`,
+      skills: ["Interview preparation", "Communication"],
+      action: "Practice technical and behavioral interview questions.",
+      project: "Complete mock interviews and a timed technical assessment.",
+      proof: "Track your mock interview performance.",
+      estimatedWeeks: 1,
       priority: "High",
     },
   ];
 
-  if (hasHTML && hasCSS) {
+
+  // ------------------------------------------
+  // Adjust roadmap to selected timeline
+  // ------------------------------------------
+
+  const totalDefaultWeeks = milestones.reduce(
+    (total, milestone) => total + milestone.estimatedWeeks,
+    0
+  );
+
+  const scale = timelineWeeks / totalDefaultWeeks;
+
+  let remainingWeeks = timelineWeeks;
+
+  milestones.forEach((milestone, index) => {
+    if (index === milestones.length - 1) {
+      milestone.estimatedWeeks = Math.max(1, remainingWeeks);
+      return;
+    }
+
+    const calculatedWeeks = Math.max(
+      1,
+      Math.round(milestone.estimatedWeeks * scale)
+    );
+
+    const weeksLeftAfterThis = milestones.length - index - 1;
+
+    milestone.estimatedWeeks = Math.min(
+      calculatedWeeks,
+      Math.max(1, remainingWeeks - weeksLeftAfterThis)
+    );
+
+    remainingWeeks -= milestone.estimatedWeeks;
+  });
+
+
+  // ------------------------------------------
+  // Add skill learning paths
+  // ------------------------------------------
+
+  milestones.forEach((milestone) => {
+    milestone.skillPaths = {};
+
+    milestone.skills.forEach((skill) => {
+      milestone.skillPaths[skill] = createSkillPath(
+        skill,
+        dreamJob,
+        milestone.project,
+        milestone.proof
+      );
+    });
+  });
+
+
+  // ------------------------------------------
+  // Existing skills customization
+  // ------------------------------------------
+
+  const existingSkills = String(knownSkills || "")
+    .split(",")
+    .map((skill) => skill.trim().toLowerCase());
+
+  if (
+    existingSkills.includes("html") &&
+    existingSkills.includes("css")
+  ) {
     milestones[2].description =
-      "You already know HTML and CSS, so use them as a foundation and move toward more advanced development skills.";
+      "You already know HTML and CSS, so this stage focuses on JavaScript, React and API integration.";
 
-    milestones[2].skills = [
-      "JavaScript",
-      "React",
-      "APIs",
-    ];
+    milestones[2].skills = ["JavaScript", "React", "APIs"];
 
-    milestones[2].skillPaths = {
-      JavaScript: makeSkillPath(
-        "JavaScript",
-        "Build an interactive browser application using JavaScript.",
-        "GitHub repository with a working JavaScript project."
-      ),
-      React: makeSkillPath(
-        "React",
-        "Build a component-based React application.",
-        "Deployed React application and GitHub repository."
-      ),
-      APIs: makeSkillPath(
-        "APIs",
-        "Build an application that consumes a real API.",
-        "Working API-integrated project."
-      ),
-    };
+    milestones[2].skillPaths = {};
+
+    milestones[2].skills.forEach((skill) => {
+      milestones[2].skillPaths[skill] = createSkillPath(
+        skill,
+        dreamJob,
+        milestones[2].project,
+        milestones[2].proof
+      );
+    });
   }
+
 
   return {
     careerTitle: dreamJob,
-    summary: `A personalized ${dreamJob} roadmap designed for a ${currentLevel} learner with approximately ${hoursPerWeek} hours per week.`,
+
+    summary: `A ${targetTimeline} roadmap personalized for a ${currentLevel} learner studying approximately ${hoursPerWeek} hours per week.`,
+
+    targetTimeline,
+
+    totalWeeks: timelineWeeks,
+
     milestones,
+
     source: "fallback",
   };
-};
+}
 
-// --------------------------------------------------
-// HOME
-// --------------------------------------------------
+
+// ==========================================
+// HEALTH CHECK
+// ==========================================
+
 app.get("/", (req, res) => {
-  res.json({
-    message: "CareerForge AI backend is running 🚀",
-  });
+  res.send(
+    "CareerForge AI backend running on http://localhost:5000"
+  );
 });
 
-// --------------------------------------------------
-// AI ROADMAP
-// --------------------------------------------------
+
+// ==========================================
+// GENERATE ROADMAP
+// ==========================================
+
 app.post("/api/generate-roadmap", async (req, res) => {
-  try {
-    const {
-      dreamJob,
-      currentLevel,
-      hoursPerWeek,
-      knownSkills,
-    } = req.body;
+  const {
+    dreamJob,
+    currentLevel,
+    hoursPerWeek,
+    knownSkills,
+    targetTimeline,
+  } = req.body;
 
-    if (!dreamJob) {
-      return res.status(400).json({
-        error: "Dream job is required.",
-      });
-    }
 
-    const prompt = `
+  if (!dreamJob || !dreamJob.trim()) {
+    return res.status(400).json({
+      error: "Dream job is required.",
+    });
+  }
+
+
+  const timeline = targetTimeline || "3 months";
+
+  const timelineWeeks = timelineToWeeks(timeline);
+
+
+  // ========================================
+  // GEMINI PROMPT
+  // ========================================
+
+  const prompt = `
 You are CareerForge AI, an expert career roadmap planner.
 
-Create a realistic, highly personalized career roadmap.
+Create a highly personalized and realistic roadmap.
 
-TARGET CAREER:
-${dreamJob}
+USER INFORMATION:
 
-CURRENT LEVEL:
+Target Career:
+${dreamJob.trim()}
+
+Current Level:
 ${currentLevel || "Beginner"}
 
-HOURS AVAILABLE PER WEEK:
+Available Hours Per Week:
 ${hoursPerWeek || "10"}
 
-SKILLS ALREADY KNOWN:
+Existing Skills:
 ${knownSkills || "None"}
 
-Requirements:
+TARGET TIMELINE:
+${timeline}
 
-- Create 6 to 8 milestones.
-- Start from the student's current level.
-- Do not unnecessarily repeat skills already known.
-- Include realistic technologies and skills.
-- Include at least one portfolio project.
-- Include internship/job preparation.
-- Make the roadmap achievable according to weekly hours.
-- Every milestone must contain actionable advice.
-- Suggest concrete projects and proof of skill.
-- Make the roadmap specific to the target career.
+TARGET TIMELINE IN WEEKS:
+${timelineWeeks}
 
-VERY IMPORTANT:
 
-For EVERY skill inside every milestone, generate a personalized
-4-step learning path.
+VERY IMPORTANT TIMELINE RULE:
 
-The learning path must contain:
+The complete roadmap MUST fit inside the user's target timeline.
 
-1. Learn
-2. Practice
-3. Build
-4. Prove
+The total estimatedWeeks of all milestones should equal approximately ${timelineWeeks} weeks.
 
-The steps must be specific to the actual skill and target career.
+If the timeline is short:
+- Prioritize essential skills.
+- Reduce unnecessary learning.
+- Focus on high-impact projects.
 
-Do NOT use generic text repeatedly.
+If the timeline is long:
+- Add deeper practice.
+- Add advanced concepts.
+- Add stronger portfolio projects.
+- Add interview preparation.
 
-For example, if the skill is React for a Full Stack Developer,
-the learning path should be specifically about React and Full Stack
-development.
 
-If the student already knows a skill, do not make that skill a major
-beginner milestone.
+ROADMAP REQUIREMENTS:
 
-Return ONLY valid JSON.
+1. Generate 6 to 8 milestones.
 
-Required JSON structure:
+2. Make every milestone specific to the target career.
+
+3. Use the user's current level.
+
+4. Use the user's existing skills.
+
+5. Do not waste time teaching skills the user already knows.
+
+6. Include realistic technical skills.
+
+7. Include concrete projects.
+
+8. Include proof-of-skill activities.
+
+9. Include job/interview preparation.
+
+10. Every milestone must have estimatedWeeks.
+
+11. Every skill must have its own personalized learning path.
+
+
+SKILL LEARNING PATH:
+
+For EVERY skill create:
+
+Learn
+Practice
+Build
+Prove
+
+These must be specific to the actual skill.
+
+Do NOT repeat generic text for every skill.
+
+
+RETURN ONLY VALID JSON.
+
+Use exactly this structure:
 
 {
   "careerTitle": "string",
   "summary": "string",
+  "targetTimeline": "${timeline}",
+  "totalWeeks": ${timelineWeeks},
   "milestones": [
     {
       "id": "m1",
       "title": "string",
       "shortTitle": "string",
       "description": "string",
-      "skills": ["string", "string"],
+      "skills": [
+        "string",
+        "string"
+      ],
       "skillPaths": {
         "Skill Name": {
           "learn": "specific learning action",
           "practice": "specific practice action",
-          "build": "specific project/build action",
-          "prove": "specific proof-of-skill action"
+          "build": "specific project action",
+          "prove": "specific proof action"
         }
       },
       "action": "string",
@@ -448,47 +434,85 @@ Required JSON structure:
 }
 `;
 
-    try {
-      const response = await ai.models.generateContent({
-        model: "gemini-3.5-flash-lite",
-        contents: prompt,
-        config: {
-          responseMimeType: "application/json",
-        },
-      });
 
-      const roadmap = JSON.parse(response.text);
+  try {
 
-      res.json({
-        ...roadmap,
-        source: "gemini",
-      });
-    } catch (aiError) {
-      console.error("GEMINI ERROR:", aiError);
-
-      console.log("Using CareerForge fallback roadmap...");
-
-      const fallback = createFallbackRoadmap({
-        dreamJob,
-        currentLevel,
-        hoursPerWeek,
-        knownSkills,
-      });
-
-      res.json(fallback);
+    if (!process.env.GEMINI_API_KEY) {
+      throw new Error("GEMINI_API_KEY is missing.");
     }
-  } catch (error) {
-    console.error("Server error:", error);
 
-    res.status(500).json({
-      error: "Failed to generate roadmap.",
-      details: error.message,
+
+    const response = await ai.models.generateContent({
+
+      model: "gemini-3.5-flash-lite",
+
+      contents: prompt,
+
+      config: {
+        responseMimeType: "application/json",
+      },
+
     });
+
+
+    const roadmap = JSON.parse(response.text);
+
+
+    if (
+      !roadmap.milestones ||
+      !Array.isArray(roadmap.milestones) ||
+      roadmap.milestones.length === 0
+    ) {
+      throw new Error("Invalid roadmap received from Gemini.");
+    }
+
+
+    res.json({
+      ...roadmap,
+
+      targetTimeline: timeline,
+
+      totalWeeks: timelineWeeks,
+
+      source: "gemini",
+    });
+
+
+  } catch (error) {
+
+    console.error("GEMINI ERROR:", error);
+
+    console.log("Using CareerForge fallback roadmap...");
+
+
+    const fallback = createFallbackRoadmap({
+
+      dreamJob: dreamJob.trim(),
+
+      currentLevel,
+
+      hoursPerWeek,
+
+      knownSkills,
+
+      targetTimeline: timeline,
+
+    });
+
+
+    res.json(fallback);
   }
 });
 
+
+// ==========================================
+// START SERVER
+// ==========================================
+
 app.listen(PORT, () => {
+
   console.log(
     `CareerForge AI backend running on http://localhost:${PORT}`
   );
+
 });
