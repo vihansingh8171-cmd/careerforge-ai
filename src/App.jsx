@@ -10,7 +10,7 @@ import {
 import "@xyflow/react/dist/style.css";
 import "./App.css";
 
-const API_URL = import.meta.env.VITE_API_URL || "http://localhost:5000";
+const API_URL = "https://careerforge-ai-c71c.onrender.com";
 
 const initialNodes = [
   {
