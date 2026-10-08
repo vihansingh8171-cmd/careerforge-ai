@@ -10,6 +10,8 @@ import {
 import "@xyflow/react/dist/style.css";
 import "./App.css";
 
+const API_URL = import.meta.env.VITE_API_URL || "http://localhost:5000";
+
 const initialNodes = [
   {
     id: "goal",
@@ -17,437 +19,156 @@ const initialNodes = [
     data: { label: "🎯 Dream Job" },
     className: "goal-node",
   },
-  {
-    id: "foundation",
-    position: { x: 100, y: 180 },
-    data: { label: "📚 Foundations" },
-  },
-  {
-    id: "frontend",
-    position: { x: 350, y: 180 },
-    data: { label: "⚛️ Frontend Development" },
-  },
-  {
-    id: "backend",
-    position: { x: 600, y: 180 },
-    data: { label: "🖥️ Backend Development" },
-  },
-  {
-    id: "projects",
-    position: { x: 350, y: 340 },
-    data: { label: "🚀 Real-World Projects" },
-  },
-  {
-    id: "internship",
-    position: { x: 350, y: 500 },
-    data: { label: "💼 Internship Ready" },
-  },
-  {
-    id: "job",
-    position: { x: 350, y: 660 },
-    data: { label: "🏆 Dream Job Ready" },
-  },
 ];
 
-const initialEdges = [
-  {
-    id: "e1",
-    source: "goal",
-    target: "foundation",
-    animated: true,
-  },
-  {
-    id: "e2",
-    source: "goal",
-    target: "frontend",
-    animated: true,
-  },
-  {
-    id: "e3",
-    source: "goal",
-    target: "backend",
-    animated: true,
-  },
-  {
-    id: "e4",
-    source: "foundation",
-    target: "projects",
-  },
-  {
-    id: "e5",
-    source: "frontend",
-    target: "projects",
-  },
-  {
-    id: "e6",
-    source: "backend",
-    target: "projects",
-  },
-  {
-    id: "e7",
-    source: "projects",
-    target: "internship",
-  },
-  {
-    id: "e8",
-    source: "internship",
-    target: "job",
-  },
-];
-const careerTemplates = {
-  developer: {
-    keywords: [
-      "developer",
-      "software",
-      "web",
-      "frontend",
-      "backend",
-      "full stack",
-      "app developer",
-    ],
-    stages: [
-      "📚 Programming Foundations",
-      "⚛️ Frontend Development",
-      "🖥️ Backend & APIs",
-      "🚀 Full-Stack Projects",
-      "💼 Internship Ready",
-      "🏆 Developer Job Ready",
-    ],
-  },
-
-  data: {
-    keywords: [
-      "data scientist",
-      "data science",
-      "machine learning",
-      "ml engineer",
-      "ai engineer",
-      "artificial intelligence",
-      "data analyst",
-    ],
-    stages: [
-      "🐍 Python & Mathematics",
-      "📊 Data Analysis",
-      "🤖 Machine Learning",
-      "🚀 AI/Data Projects",
-      "💼 Internship Ready",
-      "🏆 Data Career Ready",
-    ],
-  },
-
-  cybersecurity: {
-    keywords: [
-      "cybersecurity",
-      "cyber security",
-      "security engineer",
-      "ethical hacker",
-      "penetration tester",
-      "soc analyst",
-      "information security",
-    ],
-    stages: [
-      "🌐 Networking & Linux",
-      "🔐 Security Fundamentals",
-      "🕵️ Ethical Hacking",
-      "🚀 Security Projects",
-      "💼 Internship Ready",
-      "🏆 Security Career Ready",
-    ],
-  },
-
-  design: {
-    keywords: [
-      "ui ux",
-      "ui/ux",
-      "ux designer",
-      "ui designer",
-      "product designer",
-      "graphic designer",
-    ],
-    stages: [
-      "🎨 Design Fundamentals",
-      "🖌️ Figma & UI Design",
-      "🧠 UX Research",
-      "🚀 Portfolio Projects",
-      "💼 Internship Ready",
-      "🏆 Design Career Ready",
-    ],
-  },
-
-  marketing: {
-    keywords: [
-      "digital marketing",
-      "marketing",
-      "social media",
-      "seo",
-      "content creator",
-      "brand manager",
-    ],
-    stages: [
-      "📢 Marketing Fundamentals",
-      "🔎 SEO & Analytics",
-      "📱 Social Media",
-      "🚀 Campaign Projects",
-      "💼 Internship Ready",
-      "🏆 Marketing Career Ready",
-    ],
-  },
-};
-
-const getCareerTemplate = (job) => {
-  const normalizedJob = job.toLowerCase();
-
-  for (const template of Object.values(careerTemplates)) {
-    if (template.keywords.some((keyword) => normalizedJob.includes(keyword))) {
-      return template;
-    }
-  }
-
-  return careerTemplates.developer;
-};
-const nodeDetails = {
-  goal: {
-    title: "🎯 Dream Job",
-    description:
-      "This is your final career destination. CareerForge works backwards from this goal to create the skills and milestones you need.",
-    action:
-      "Define the exact role, industry and company type you want to target.",
-    proof:
-      "Create a clear target profile with required skills, projects and experience.",
-  },
-
-  foundation: {
-    title: "📚 Foundations",
-    description:
-      "Build the fundamental knowledge required before moving into advanced technologies.",
-    action:
-      "Learn programming fundamentals, problem solving, Git and core computer science concepts.",
-    proof: "Complete small practice projects and maintain your work on GitHub.",
-  },
-
-  frontend: {
-    title: "⚛️ Frontend Development",
-    description:
-      "Learn how to create modern, responsive and interactive web applications.",
-    action:
-      "Master HTML, CSS, JavaScript, React and responsive UI development.",
-    proof: "Build 2–3 polished frontend projects and publish them on GitHub.",
-  },
-
-  backend: {
-    title: "🖥️ Backend Development",
-    description:
-      "Learn how applications handle data, authentication, APIs and server-side logic.",
-    action: "Learn Node.js, Express, REST APIs, databases and authentication.",
-    proof: "Build a backend API and connect it to a real frontend application.",
-  },
-
-  projects: {
-    title: "🚀 Real-World Projects",
-    description:
-      "Projects convert your knowledge into visible proof that you can actually build.",
-    action:
-      "Build projects that solve real problems instead of only following tutorials.",
-    proof:
-      "Publish projects with GitHub repositories, live demos and clear documentation.",
-  },
-
-  internship: {
-    title: "💼 Internship Ready",
-    description: "Prepare yourself to work in a real development environment.",
-    action:
-      "Improve your resume, GitHub profile, communication and technical interview skills.",
-    proof:
-      "Complete internship applications and be ready to explain your projects.",
-  },
-
-  job: {
-    title: "🏆 Dream Job Ready",
-    description:
-      "You have reached the final stage of the roadmap and are ready to target your desired role.",
-    action:
-      "Apply strategically, practice interviews and continue improving your skills.",
-    proof:
-      "Resume + GitHub + portfolio + interview preparation + real project experience.",
-  },
-};
+const initialEdges = [];
 
 function App() {
   const [started, setStarted] = useState(false);
 
   const [dreamJob, setDreamJob] = useState("");
-
   const [level, setLevel] = useState("Beginner");
-
   const [hours, setHours] = useState("10");
-
   const [skills, setSkills] = useState("");
 
   const [nodes, setNodes, onNodesChange] = useNodesState(initialNodes);
-
   const [edges, setEdges, onEdgesChange] = useEdgesState(initialEdges);
 
   const [selectedNode, setSelectedNode] = useState(null);
-
   const [completedNodes, setCompletedNodes] = useState([]);
 
-  const getPersonalizedStages = (
-    template,
-    currentLevel,
-    weeklyHours,
-    knownSkills,
-  ) => {
-    const hours = Number(weeklyHours);
+  const [loading, setLoading] = useState(false);
+  const [aiSource, setAiSource] = useState("");
+  const [roadmapSummary, setRoadmapSummary] = useState("");
 
-    const skillsText = knownSkills
-      .toLowerCase()
-      .split(",")
-      .map((skill) => skill.trim())
-      .filter(Boolean);
-
-    const hasSkills = skillsText.length > 0;
-
-    let stages = [...template.stages];
-
-    // BEGINNER
-    if (currentLevel === "Beginner") {
-      stages[0] = hasSkills ? `🧩 Skill Gap Analysis` : stages[0];
-
-      stages[3] =
-        hours <= 5 ? "🚀 Guided Mini Projects" : "🚀 Real-World Projects";
+  const generateRoadmap = async () => {
+    if (!dreamJob.trim()) {
+      alert("Please enter your dream job first.");
+      return;
     }
 
-    // INTERMEDIATE
-    if (currentLevel === "Intermediate") {
-      stages[0] = hasSkills ? "⚡ Existing Skills → Skill Gap" : stages[0];
+    setLoading(true);
+    setSelectedNode(null);
+    setCompletedNodes([]);
 
-      stages[3] =
-        hours >= 15
-          ? "🚀 Advanced Portfolio Projects"
-          : "🚀 Practical Projects";
+    try {
+      const response = await fetch(`${API_URL}/api/generate-roadmap`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          dreamJob: dreamJob.trim(),
+          currentLevel: level,
+          hoursPerWeek: hours,
+          knownSkills: skills,
+        }),
+      });
+
+      const data = await response.json();
+
+      if (!response.ok) {
+        throw new Error(data.error || "Unable to generate roadmap.");
+      }
+
+      if (
+        !data.milestones ||
+        !Array.isArray(data.milestones) ||
+        data.milestones.length === 0
+      ) {
+        throw new Error("AI returned an invalid roadmap.");
+      }
+
+      const dynamicNodes = [
+        {
+          id: "goal",
+          position: { x: 350, y: 20 },
+          data: {
+            label: `🎯 ${data.careerTitle || dreamJob}`,
+          },
+          className: "goal-node",
+        },
+      ];
+
+      const positions = [
+        { x: 100, y: 180 },
+        { x: 350, y: 180 },
+        { x: 600, y: 180 },
+        { x: 350, y: 340 },
+        { x: 350, y: 500 },
+        { x: 350, y: 660 },
+        { x: 350, y: 820 },
+        { x: 350, y: 980 },
+      ];
+
+      data.milestones.forEach((milestone, index) => {
+        dynamicNodes.push({
+          id: milestone.id || `m${index + 1}`,
+          position: positions[index] || {
+            x: 350,
+            y: 180 + index * 160,
+          },
+          data: {
+            label:
+              milestone.shortTitle ||
+              milestone.title ||
+              `Milestone ${index + 1}`,
+            milestone,
+          },
+        });
+      });
+
+      const dynamicEdges = [];
+
+      if (data.milestones.length > 0) {
+        dynamicEdges.push({
+          id: "goal-first",
+          source: "goal",
+          target: data.milestones[0].id || "m1",
+          animated: true,
+        });
+      }
+
+      for (let i = 1; i < data.milestones.length; i++) {
+        dynamicEdges.push({
+          id: `roadmap-${i}`,
+          source: data.milestones[i - 1].id || `m${i}`,
+          target: data.milestones[i].id || `m${i + 1}`,
+          animated: i < 3,
+        });
+      }
+
+      setNodes(dynamicNodes);
+      setEdges(dynamicEdges);
+
+      setRoadmapSummary(data.summary || "");
+      setAiSource(data.source || "gemini");
+      setStarted(true);
+    } catch (error) {
+      console.error("Roadmap generation error:", error);
+
+      alert(
+        "Could not generate the roadmap. Please make sure the CareerForge backend is running.",
+      );
+    } finally {
+      setLoading(false);
     }
-
-    // ADVANCED
-    if (currentLevel === "Advanced") {
-      stages[0] = "🎯 Advanced Skill Gap";
-
-      stages[3] =
-        hours >= 15
-          ? "🚀 Industry-Level Projects"
-          : "🚀 Focused Capstone Project";
-    }
-
-    // TIME ADAPTATION
-    if (hours <= 5) {
-      stages[4] = "💼 Internship Ready · Slow Track";
-      stages[5] = "🏆 Career Ready · Long Track";
-    } else if (hours >= 15) {
-      stages[4] = "💼 Internship Ready · Fast Track";
-      stages[5] = "🏆 Career Ready · Accelerated";
-    }
-
-    return stages;
   };
- const generateRoadmap = () => {
-  if (!dreamJob.trim()) {
-    alert("Please enter your dream job first.");
-    return;
-  }
 
-  const template = getCareerTemplate(dreamJob);
-
-  const personalizedStages = getPersonalizedStages(
-    template,
-    level,
-    hours,
-    skills
-  );
-
-  const dynamicNodes = [
-    {
-      id: "goal",
-      position: { x: 350, y: 20 },
-      data: {
-        label: `🎯 ${dreamJob}`,
-      },
-      className: "goal-node",
-    },
-
-    {
-      id: "foundation",
-      position: { x: 100, y: 180 },
-      data: {
-        label: personalizedStages[0],
-      },
-    },
-
-    {
-      id: "frontend",
-      position: { x: 350, y: 180 },
-      data: {
-        label: personalizedStages[1],
-      },
-    },
-
-    {
-      id: "backend",
-      position: { x: 600, y: 180 },
-      data: {
-        label: personalizedStages[2],
-      },
-    },
-
-    {
-      id: "projects",
-      position: { x: 350, y: 340 },
-      data: {
-        label: personalizedStages[3],
-      },
-    },
-
-    {
-      id: "internship",
-      position: { x: 350, y: 500 },
-      data: {
-        label: personalizedStages[4],
-      },
-    },
-
-    {
-      id: "job",
-      position: { x: 350, y: 660 },
-      data: {
-        label: personalizedStages[5],
-      },
-    },
-  ];
-
-  setNodes(dynamicNodes);
-
-  setCompletedNodes([]);
-
-  setSelectedNode(null);
-
-  setStarted(true);
-};
   const resetRoadmap = () => {
     setStarted(false);
-
     setDreamJob("");
-
     setSkills("");
-
     setLevel("Beginner");
-
     setHours("10");
 
     setNodes(initialNodes);
-
     setEdges(initialEdges);
 
     setSelectedNode(null);
-
     setCompletedNodes([]);
+    setAiSource("");
+    setRoadmapSummary("");
   };
 
   const markCompleted = () => {
@@ -468,25 +189,76 @@ function App() {
       );
     }
   };
+  const markAsKnown = () => {
+    if (!selectedNode) return;
 
-  const progress = Math.round(
-    (completedNodes.length / initialNodes.length) * 100,
-  );
+    const nodeId = selectedNode.id;
+
+    // Find nodes connected before and after this milestone
+    const incomingNodes = edges
+      .filter((edge) => edge.target === nodeId)
+      .map((edge) => edge.source);
+
+    const outgoingNodes = edges
+      .filter((edge) => edge.source === nodeId)
+      .map((edge) => edge.target);
+
+    // Remove the selected milestone
+    setNodes((currentNodes) =>
+      currentNodes.filter((node) => node.id !== nodeId),
+    );
+
+    // Remove old connections and create direct connections
+    setEdges((currentEdges) => {
+      const remainingEdges = currentEdges.filter(
+        (edge) => edge.source !== nodeId && edge.target !== nodeId,
+      );
+
+      const newEdges = [];
+
+      incomingNodes.forEach((source) => {
+        outgoingNodes.forEach((target) => {
+          const bridgeId = `skip-${source}-${target}`;
+
+          if (
+            !remainingEdges.some(
+              (edge) => edge.source === source && edge.target === target,
+            )
+          ) {
+            newEdges.push({
+              id: bridgeId,
+              source,
+              target,
+              animated: true,
+            });
+          }
+        });
+      });
+
+      return [...remainingEdges, ...newEdges];
+    });
+
+    setSelectedNode(null);
+  };
+
+  const roadmapMilestones = nodes.filter((node) => node.id !== "goal");
+
+  const progress =
+    roadmapMilestones.length > 0
+      ? Math.round((completedNodes.length / roadmapMilestones.length) * 100)
+      : 0;
 
   if (started) {
-    const selectedDetails = selectedNode ? nodeDetails[selectedNode.id] : null;
+    const selectedDetails = selectedNode?.data?.milestone || null;
 
     return (
       <div className="app roadmap-page">
-        {/* TOP BAR */}
-
         <header className="topbar">
           <div className="brand">
             <div className="brand-icon">CF</div>
 
             <div>
               <h2>CareerForge AI</h2>
-
               <span>Reverse-engineer your dream career</span>
             </div>
           </div>
@@ -496,11 +268,9 @@ function App() {
           </button>
         </header>
 
-        {/* ROADMAP HEADER */}
-
         <div className="roadmap-header">
           <div>
-            <p className="eyebrow">YOUR PERSONALIZED ROADMAP</p>
+            <p className="eyebrow">YOUR AI-GENERATED ROADMAP</p>
 
             <h1>{dreamJob}</h1>
 
@@ -508,6 +278,33 @@ function App() {
               {level} · {hours} hours/week
               {skills ? ` · Already know: ${skills}` : ""}
             </p>
+
+            {roadmapSummary && (
+              <p
+                style={{
+                  maxWidth: "720px",
+                  marginTop: "10px",
+                  opacity: 0.8,
+                }}
+              >
+                {roadmapSummary}
+              </p>
+            )}
+
+            {aiSource && (
+              <div
+                style={{
+                  marginTop: "10px",
+                  fontSize: "12px",
+                  opacity: 0.75,
+                }}
+              >
+                ✦{" "}
+                {aiSource === "gemini"
+                  ? "Generated by Gemini AI"
+                  : "CareerForge AI fallback engine"}
+              </div>
+            )}
           </div>
 
           <div className="progress-card">
@@ -520,12 +317,10 @@ function App() {
                 style={{
                   width: `${progress}%`,
                 }}
-              ></div>
+              />
             </div>
           </div>
         </div>
-
-        {/* MAIN ROADMAP AREA */}
 
         <div className="roadmap-layout">
           <div className="flow-container">
@@ -537,7 +332,7 @@ function App() {
               onNodeClick={(event, node) => {
                 event.preventDefault();
                 event.stopPropagation();
-                console.log("NODE CLICKED:", node.id);
+
                 setSelectedNode(node);
               }}
               nodesDraggable={false}
@@ -547,13 +342,9 @@ function App() {
               attributionPosition="bottom-left"
             >
               <Background gap={20} size={1} />
-
               <Controls />
-
               <MiniMap />
             </ReactFlow>
-
-            {/* NODE DETAILS PANEL */}
 
             {selectedNode && selectedDetails && (
               <div className="node-details">
@@ -570,16 +361,42 @@ function App() {
 
                 <p className="detail-text">{selectedDetails.description}</p>
 
+                {selectedDetails.skills?.length > 0 && (
+                  <div className="detail-box">
+                    <strong>🧠 Skills</strong>
+                    <p>{selectedDetails.skills.join(" • ")}</p>
+                  </div>
+                )}
+
                 <div className="detail-box">
                   <strong>🎯 What to do</strong>
-
                   <p>{selectedDetails.action}</p>
                 </div>
 
                 <div className="detail-box">
-                  <strong>💼 Proof of skill</strong>
+                  <strong>🚀 Suggested project</strong>
+                  <p>{selectedDetails.project}</p>
+                </div>
 
+                <div className="detail-box">
+                  <strong>💼 Proof of skill</strong>
                   <p>{selectedDetails.proof}</p>
+                </div>
+
+                <div
+                  className="detail-box"
+                  style={{
+                    display: "flex",
+                    justifyContent: "space-between",
+                    gap: "12px",
+                  }}
+                >
+                  <span>
+                    ⏱️ {selectedDetails.estimatedWeeks || 1} week
+                    {selectedDetails.estimatedWeeks > 1 ? "s" : ""}
+                  </span>
+
+                  <span>⭐ {selectedDetails.priority || "High"} Priority</span>
                 </div>
 
                 {completedNodes.includes(selectedNode.id) ? (
@@ -587,15 +404,19 @@ function App() {
                     ✓ Completed
                   </button>
                 ) : (
-                  <button className="complete-btn" onClick={markCompleted}>
-                    ✓ Mark as completed
-                  </button>
+                  <>
+                    <button className="complete-btn" onClick={markAsKnown}>
+                      ✓ I already know this
+                    </button>
+
+                    <button className="complete-btn" onClick={markCompleted}>
+                      ✓ Mark as completed
+                    </button>
+                  </>
                 )}
               </div>
             )}
           </div>
-
-          {/* SIDE PANEL */}
 
           <aside className="side-panel">
             <p className="eyebrow">HOW IT WORKS</p>
@@ -606,9 +427,8 @@ function App() {
               <span>01</span>
 
               <div>
-                <strong>Build foundations</strong>
-
-                <p>Master the essential concepts for your target role.</p>
+                <strong>Reverse-engineer the goal</strong>
+                <p>Start with the exact career you want.</p>
               </div>
             </div>
 
@@ -616,9 +436,8 @@ function App() {
               <span>02</span>
 
               <div>
-                <strong>Develop job skills</strong>
-
-                <p>Learn the technologies companies actually use.</p>
+                <strong>Identify skill gaps</strong>
+                <p>Your existing skills and level influence the roadmap.</p>
               </div>
             </div>
 
@@ -627,8 +446,9 @@ function App() {
 
               <div>
                 <strong>Build proof</strong>
-
-                <p>Create real projects that demonstrate your ability.</p>
+                <p>
+                  Every milestone includes projects and proof-of-skill actions.
+                </p>
               </div>
             </div>
 
@@ -637,8 +457,7 @@ function App() {
 
               <div>
                 <strong>Become job ready</strong>
-
-                <p>Prepare for interviews and real-world roles.</p>
+                <p>Finish with internship and job preparation.</p>
               </div>
             </div>
 
@@ -649,8 +468,8 @@ function App() {
                 <strong>AI-Powered</strong>
 
                 <p>
-                  Your roadmap will adapt to your existing skills, time and
-                  career goal.
+                  Your roadmap is generated from your target career, current
+                  level, available time and existing skills.
                 </p>
               </div>
             </div>
@@ -658,10 +477,6 @@ function App() {
         </div>
       </div>
     );
-  }
-
-  {
-    /* LANDING PAGE */
   }
 
   return (
@@ -672,7 +487,6 @@ function App() {
 
           <div>
             <h2>CareerForge</h2>
-
             <span>AI Career Roadmapper</span>
           </div>
         </div>
@@ -702,7 +516,6 @@ function App() {
             <div className="card-heading">
               <div>
                 <h2>Build your career roadmap</h2>
-
                 <p>Tell us about your career destination.</p>
               </div>
 
@@ -727,9 +540,7 @@ function App() {
                   onChange={(e) => setLevel(e.target.value)}
                 >
                   <option>Beginner</option>
-
                   <option>Intermediate</option>
-
                   <option>Advanced</option>
                 </select>
               </label>
@@ -741,11 +552,8 @@ function App() {
                   onChange={(e) => setHours(e.target.value)}
                 >
                   <option value="5">5 hours</option>
-
                   <option value="10">10 hours</option>
-
                   <option value="15">15 hours</option>
-
                   <option value="20">20+ hours</option>
                 </select>
               </label>
@@ -761,24 +569,26 @@ function App() {
               />
             </label>
 
-            <button className="generate-btn" onClick={generateRoadmap}>
-              Generate My Career Roadmap
-              <span>→</span>
+            <button
+              className="generate-btn"
+              onClick={generateRoadmap}
+              disabled={loading}
+            >
+              {loading
+                ? "Generating AI Roadmap..."
+                : "Generate My Career Roadmap"}
+
+              <span>{loading ? "✦" : "→"}</span>
             </button>
           </div>
 
           <div className="trust-row">
             <span>✓ Personalized</span>
-
             <span>✓ Skill-aware</span>
-
             <span>✓ Time-aware</span>
-
             <span>✓ Interactive</span>
           </div>
         </section>
-
-        {/* PREVIEW */}
 
         <section className="preview">
           <div className="preview-glow"></div>
@@ -786,7 +596,6 @@ function App() {
           <div className="preview-card">
             <div className="preview-top">
               <span>LIVE ROADMAP PREVIEW</span>
-
               <span className="live-dot">● LIVE</span>
             </div>
 
@@ -795,7 +604,6 @@ function App() {
 
               <div>
                 <small>DREAM DESTINATION</small>
-
                 <strong>Full Stack Developer</strong>
               </div>
             </div>
@@ -837,8 +645,7 @@ function App() {
 
             <div className="preview-footer">
               <span>✦ AI GENERATED PATH</span>
-
-              <span>5 milestones</span>
+              <span>5+ milestones</span>
             </div>
           </div>
         </section>
@@ -846,7 +653,6 @@ function App() {
 
       <footer>
         <span>CareerForge AI</span>
-
         <span>Built for students preparing for the future of work.</span>
       </footer>
     </div>
