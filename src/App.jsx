@@ -339,6 +339,11 @@ function App() {
               nodesConnectable={false}
               elementsSelectable={true}
               fitView
+              fitViewOptions={{
+                padding: 0.15,
+                minZoom: 0.55,
+                maxZoom: 1.2,
+              }}
               attributionPosition="bottom-left"
             >
               <Background gap={20} size={1} />
